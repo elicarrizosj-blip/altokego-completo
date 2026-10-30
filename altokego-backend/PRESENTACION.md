@@ -3,7 +3,7 @@
 ## 1. La idea y el problema 
 
 * AltokeGo es una plataforma para pedir y gestionar viajes en un servicio de transporte local en Media Agua, que conecta a pasajeros con el servicio de forma ágil.
-* Usuario objetivo: vecinos de Media Agua y la zona que necesitan trasladarse. La idea surgio  y qué alternativa  (por ejemplo, coordinar por mensajes o por teléfono).
+* Usuario objetivo: vecinos de Media Agua y alrededores que necesitan trasladarse. La idea surgioa partir de el problema real de taransporte, pocas frecuencias , horarios poco claros etc.
 * Propuesta de valor: pedir un viaje en un solo lugar, con precio y método de pago registrados, y con cuentas protegidas por usuario y contraseña.
 
 ## 2. Trabajo en equipo y metodología 
