@@ -1,28 +1,26 @@
-# Guion de la presentación final - AltokeGo
+# Presentación final - AltokeGo
 
-Modalidad sugerida: **Opción B (demo interactiva integrada)**, con dos o tres minutos de introducción antes de abrir la aplicación. Duración total: 15 a 20 minutos. Los puntos marcados con **[completar]** dependen de lo que hizo realmente el equipo y hay que ajustarlos antes de exponer.
-
-## 1. La idea y el problema (2 min)
+## 1. La idea y el problema 
 
 * AltokeGo es una plataforma para pedir y gestionar viajes en un servicio de transporte local en Media Agua, que conecta a pasajeros con el servicio de forma ágil.
-* Usuario objetivo: vecinos de Media Agua y la zona que necesitan trasladarse. **[completar]** cómo surgió la idea y qué alternativa usan hoy (por ejemplo, coordinar por mensajes o por teléfono).
+* Usuario objetivo: vecinos de Media Agua y la zona que necesitan trasladarse. La idea surgio  y qué alternativa  (por ejemplo, coordinar por mensajes o por teléfono).
 * Propuesta de valor: pedir un viaje en un solo lugar, con precio y método de pago registrados, y con cuentas protegidas por usuario y contraseña.
 
-## 2. Trabajo en equipo y metodología (2 min)
+## 2. Trabajo en equipo y metodología 
 
-* Integrantes: Carrizo Eliana, Diaz Carolina, Torres Maria.
-* División de tareas: **[completar]** quién hizo backend, base de datos, seguridad, pruebas y documentación.
+* Integrantes: Diaz Carolina, Torres Maria, Carrizo Eliana.
+* División de tareas: El equipo fue quién hizo backend, base de datos, seguridad, pruebas y documentación.
 * Control de versiones: Git y GitHub, con un repositorio del grupo y forks personales que se integran con pull requests.
-* Tablero y reuniones: **[completar]** si usaron Trello, GitHub Projects u otro, y cada cuánto se coordinaron.
+* Tablero y reuniones: GitHub Projects, reuniones .
 
-## 3. Arquitectura y rol de la IA (3 min)
+## 3. Arquitectura y rol de la IA 
 
 * Tecnologías: Java 21, Spring Boot 3.2.5, Spring Data JPA, MySQL, Spring Security con Basic Auth, BCrypt, y una pantalla web en HTML y JavaScript que sirve la propia aplicación.
 * Capas del backend: controller, service, repository, entity, dto, mapper y exception.
 * Modelo de datos: un `Pasajero` tiene muchos `Viaje`; `Usuario` guarda las cuentas con el rol (USER o ADMIN) y la contraseña como hash.
-* Uso de IA: En este proyecto se usó para revisar el código contra las consignas, generar la documentación (README), armar la colección de Postman, preparar los datos de demo y la pantalla web, y practicar preguntas para el oral. Conviene aclarar que cada integrante revisó y entiende el código que entrega.
+* Uso de IA: En este proyecto se usó para revisar el código contra las consignas, generar la documentación (README), armar la colección de Postman, preparar los datos de demo y la pantalla web,. Conviene aclarar que cada integrante revisó y entiende el código que entrega.
 
-## 4. Demostración en vivo (8 min)
+## 4. Demostración en vivo 
 
 Antes de empezar: MySQL encendido (con base limpia para que se carguen los datos de demo), la aplicación corriendo y `http://localhost:8080` abierto.
 
@@ -39,21 +37,21 @@ Antes de empezar: MySQL encendido (con base limpia para que se carguen los datos
 
 | Materia | Qué aporta la aplicación |
 |---|---|
-| Desarrollo de Aplicativos | Flujo completo de usuario, dos roles, respuestas del backend visibles, datos de demo y esta presentación. |
+| Desarrollo de Aplicativos | Flujo completo de usuario, dos roles, respuestas del backend visibles, datos de demo y presentación. |
 | Desarrollo Emprendedor | Pasajero que pide viaje con tarifa estimada y confirmación, recargo por camino de tierra, zonas de Media Agua y alrededores, asignación manual del chofer y comisión del 12%. Lo que queda para la Fase 2 coincide con lo que planteamos en los trabajos prácticos. |
 | Lenguaje de Programación II | API con Spring Boot, JPA y MySQL, CRUD, relación pasajero-viaje, registro con BCrypt, Basic Auth y permisos por roles. |
 | Bases de Datos | Tablas `usuarios`, `pasajeros` y `viajes` con claves y relación, y los mismos estados de viaje que el informe. `vehiculos` y `conductor_id` del informe se incorporan en la Fase 2. |
 
-## 5. Obstáculos y aprendizaje (2 min)
+## 5. Obstáculos y aprendizaje 
 
-Contar los que realmente vivieron. Ejemplos válidos de este proyecto:
+ Ejemplos válidos de este proyecto:
 
 * En Basic Auth se envía la contraseña original, no el hash guardado en la base.
 * Diferencia entre 401 (no sabemos quién sos) y 403 (sabemos quién sos pero no tenés el rol).
 * No se puede eliminar un pasajero que tiene viajes: la relación lo impide y el servicio responde 409.
 * Dos registros con el mismo correo: se controla en el service y además con una restricción única en la base.
 
-## 6. Visión a futuro (2 min)
+## 6. Visión a futuro
 
 * **Producción:** desplegar en un servicio en la nube, pasar las credenciales de la base a variables de entorno, usar HTTPS y desactivar los datos de demo (`altokego.seed.enabled=false`).
 * **Seguridad:** reemplazar Basic Auth por tokens (JWT) y manejar los roles desde un administrador.
