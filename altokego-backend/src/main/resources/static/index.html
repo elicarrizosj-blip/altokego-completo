@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AltokeGo - Viajes en tu zona</title>
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<style>
+  :root { --verde:#0f6e58; --osc:#05342c; --naranja:#d85a31; --crema:#f7f4ef; --gris:#5f6b66; --borde:#dfe5e1; --rojo:#b3261e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--crema); color:#17211d; padding-bottom:76px; }
+  [hidden] { display:none !important; }
+  .ancho { max-width:520px; margin:0 auto; padding:0 14px; }
+  body.admin .ancho { max-width:1000px; }
+  button { font:inherit; cursor:pointer; border:0; border-radius:10px; padding:11px 16px; background:var(--verde); color:#fff; font-weight:600; }
+  button.sec { background:#fff; color:var(--verde); border:1.5px solid var(--verde); }
+  button.nar { background:var(--naranja); }
+  button.mini { padding:6px 10px; font-size:.8rem; border-radius:8px; background:#fff; color:var(--rojo); border:1px solid var(--rojo); }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  input, select { width:100%; padding:11px 12px; border:1.5px solid var(--borde); border-radius:10px; font:inherit; background:#fff; }
+  label { display:block; font-size:.85rem; color:var(--gris); margin:12px 0 5px; font-weight:600; }
+  .card { background:#fff; border:1px solid var(--borde); border-radius:16px; padding:16px; margin:12px 0; }
+  h2 { margin:18px 0 4px; font-size:1.25rem; }
+  .sub { color:var(--gris); font-size:.9rem; margin:0 0 6px; }
+  /* Acceso */
+  #auth { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:20px 0; background:linear-gradient(var(--verde) 0 47%,var(--crema) 47%); }
+  .hero { text-align:center; color:#fff; margin-bottom:14px; }
+  .hero img { width:120px; height:120px; filter:drop-shadow(0 6px 14px rgba(0,0,0,.25)); }
+  .hero h1 { margin:6px 0 2px; font-size:1.6rem; } .hero p { margin:0; opacity:.9; }
+  .tabs { display:flex; gap:6px; background:var(--crema); border-radius:12px; padding:4px; }
+  .tabs button { flex:1; background:transparent; color:var(--gris); }
+  .tabs button.on { background:#fff; color:var(--verde); box-shadow:0 1px 4px rgba(0,0,0,.12); }
+  .demo { display:flex; gap:8px; margin-top:14px; } .demo button { flex:1; font-size:.85rem; padding:10px 8px; }
+  .nota { font-size:.8rem; color:var(--gris); text-align:center; margin:10px 0 0; }
+  /* App */
+  .top { background:var(--verde); color:#fff; position:sticky; top:0; z-index:5; }
+  .top .ancho { display:flex; align-items:center; gap:10px; height:58px; }
+  .top img { width:38px; height:38px; } .top b { font-size:1.1rem; flex:1; }
+  .quien { font-size:.8rem; text-align:right; line-height:1.25; } .quien small { opacity:.85; display:block; }
+  .top button { padding:6px 10px; font-size:.8rem; background:rgba(255,255,255,.18); }
+  nav { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--borde); z-index:5; }
+  nav .ancho { display:flex; padding:0; } nav button { flex:1; background:none; color:var(--gris); border-radius:0; padding:10px 4px; font-size:.78rem; font-weight:600; }
+  nav button span { display:block; font-size:1.35rem; } nav button.on { color:var(--verde); box-shadow:inset 0 3px 0 var(--naranja); }
+  /* Pedir viaje */
+  .tarifa { background:var(--osc); color:#fff; border-radius:14px; padding:14px; margin-top:14px; text-align:center; }
+  .tarifa small { opacity:.8; display:block; } .tarifa strong { font-size:2rem; display:block; }
+  .check { display:flex; align-items:center; gap:8px; margin-top:12px; font-size:.9rem; } .check input { width:auto; }
+  #btn-confirmar { width:100%; margin-top:14px; padding:14px; font-size:1.05rem; }
+  /* Viajes */
+  .viaje { display:flex; flex-direction:column; gap:6px; }
+  .viaje .ruta { font-weight:700; font-size:1.05rem; } .viaje .meta { color:var(--gris); font-size:.85rem; }
+  .viaje .fila { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:99px; font-size:.75rem; font-weight:700; }
+  .st-pendiente { background:#fff1dc; color:#9a5b00; } .st-curso { background:#dcecff; color:#0b4a9a; }
+  .st-finalizado { background:#dff3e8; color:#0b6b3a; } .st-cancelado { background:#fde4e1; color:var(--rojo); }
+  .kpis { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:12px 0; } body.admin .kpis { grid-template-columns:repeat(4,1fr); }
+  .kpi { background:#fff; border:1px solid var(--borde); border-radius:14px; padding:12px; } .kpi small { color:var(--gris); display:block; font-size:.78rem; } .kpi b { font-size:1.25rem; }
+  .kpi.nar { border-color:var(--naranja); } .kpi.nar b { color:var(--naranja); }
+  .lista { display:grid; gap:10px; } body.admin .lista { grid-template-columns:repeat(2,1fr); } .lista .card { margin:0; }
+  .vacio { text-align:center; color:var(--gris); padding:30px 10px; }
+  select.estado { width:auto; padding:6px 8px; font-size:.85rem; }
+  .ok-card { text-align:center; } .ok-card .grande { font-size:2.4rem; }
+  /* Mensajes y consola */
+  #toast { position:fixed; top:66px; left:50%; transform:translateX(-50%); z-index:9; max-width:92%; padding:11px 16px; border-radius:12px; font-size:.9rem; font-weight:600; box-shadow:0 6px 20px rgba(0,0,0,.2); }
+  #toast.ok { background:#dff3e8; color:#0b6b3a; } #toast.error { background:#fde4e1; color:var(--rojo); }
+  details.consola { margin:16px 0 8px; background:#101820; color:#c9f5df; border-radius:12px; padding:10px 14px; font-size:.82rem; }
+  details.consola summary { cursor:pointer; font-weight:600; } details.consola pre { margin:8px 0 0; white-space:pre-wrap; overflow-x:auto; }
+  @media (max-width:640px) { body.admin .kpis { grid-template-columns:repeat(2,1fr); } body.admin .lista { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div id="toast" hidden></div>
+
+<!-- ACCESO -->
+<section id="auth">
+  <div class="ancho">
+    <div class="hero">
+      <img src="/logo.svg" alt="Logo de AltokeGo">
+      <h1>Viajá en tu zona, sin vueltas</h1>
+      <p>Pedí tu viaje en Media Agua y alrededores</p>
+    </div>
+    <div class="card">
+      <div class="tabs">
+        <button id="t-entrar" class="on" onclick="tabAuth('entrar')">Ingresar</button>
+        <button id="t-registro" onclick="tabAuth('registro')">Crear cuenta</button>
+      </div>
+      <div id="p-entrar">
+        <label for="l-email">Correo</label><input id="l-email" type="email" placeholder="tu@correo.com">
+        <label for="l-pass">Contraseña</label><input id="l-pass" type="password" placeholder="Tu contraseña">
+        <button style="width:100%;margin-top:14px" onclick="entrar($('l-email').value.trim(), $('l-pass').value)">Ingresar</button>
+        <div class="demo">
+          <button class="sec" onclick="demo('USER')">Probar como pasajero</button>
+          <button class="sec" onclick="demo('ADMIN')">Probar como administrador</button>
+        </div>
+        <p class="nota">Accesos de demo con datos de ejemplo ya cargados.</p>
+      </div>
+      <div id="p-registro" hidden>
+        <label for="r-nombre">Nombre</label><input id="r-nombre" placeholder="Tu nombre">
+        <label for="r-email">Correo</label><input id="r-email" type="email" placeholder="tu@correo.com">
+        <label for="r-pass">Contraseña</label><input id="r-pass" type="password" placeholder="Mínimo 6 caracteres">
+        <button class="nar" style="width:100%;margin-top:14px" onclick="registrar()">Crear mi cuenta</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APP -->
+<div id="shell" hidden>
+  <header class="top"><div class="ancho">
+    <img src="/logo.svg" alt=""><b>AltokeGo</b>
+    <div class="quien" id="quien"></div><button onclick="salir()">Salir</button>
+  </div></header>
+  <div class="ancho">
+    <main id="vista"></main>
+    <details class="consola">
+      <summary id="resumen">Respuesta del servidor (para la demo)</summary>
+      <pre id="log">Todavía no se hizo ninguna petición.</pre>
+    </details>
+  </div>
+  <nav><div class="ancho" id="nav"></div></nav>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  const dinero = (n) => '$ ' + Number(n || 0).toLocaleString('es-AR');
+
+  // Zonas y tarifa de demostración: la tarifa real la confirma el operador
+  const ZONAS = { 'Media Agua':0, 'Pocito':2, 'San Juan':3, 'Caucete':4 };
+  const COMISION = 0.12;
+  const ESTADOS = [['pendiente','Pendiente'], ['en curso','En curso'], ['finalizado','Finalizado'], ['cancelado','Cancelado']];
+  const TABS = {
+    USER:  [['pedir','🚗','Pedir viaje'], ['mis','🧾','Mis viajes']],
+    ADMIN: [['operaciones','📋','Operaciones'], ['pasajeros','👥','Pasajeros']]
+  };
+
+  let cred = null, me = null, pasajero = null, tarifaActual = 0;
+
+  // Todas las peticiones pasan por acá. Basic Auth: "correo:contraseña" en base64 en cada petición.
+  // X-Requested-With evita el cuadro de login del navegador cuando la respuesta es 401.
+  async function api(metodo, ruta, cuerpo, log = true) {
+    const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+    if (cuerpo) headers['Content-Type'] = 'application/json';
+    if (cred) headers['Authorization'] = 'Basic ' + btoa(String.fromCharCode(...new TextEncoder().encode(cred.email + ':' + cred.password)));
+    const resp = await fetch(ruta, { method: metodo, headers, body: cuerpo ? JSON.stringify(cuerpo) : undefined });
+    const texto = await resp.text();
+    let datos = null;
+    try { datos = texto ? JSON.parse(texto) : null; } catch (e) { datos = texto; }
+    if (log) {
+      $('log').textContent = metodo + ' ' + ruta + ' -> ' + resp.status + '\n' + (datos ? JSON.stringify(datos, null, 2) : '(sin contenido)');
+      $('resumen').textContent = 'Respuesta del servidor: ' + metodo + ' ' + ruta + ' -> ' + resp.status;
+    }
+    return { ok: resp.ok, status: resp.status, datos };
+  }
+
+  function toast(texto, tipo = 'ok') {
+    const t = $('toast');
+    t.textContent = texto; t.className = tipo; t.hidden = false;
+    clearTimeout(toast.id); toast.id = setTimeout(() => { t.hidden = true; }, 4500);
+  }
+  function textoError(r) {
+    if (r.status === 401) return 'Correo o contraseña incorrectos (401).';
+    if (r.status === 403) return 'No tenés permiso para esta acción: solo el administrador puede hacerla (403).';
+    const d = r.datos;
+    if (d && d.mensaje) return d.mensaje + (d.detalles && d.detalles.length ? ': ' + d.detalles.join('; ') : '') + ' (' + r.status + ')';
+    return 'No se pudo completar la acción (' + r.status + ').';
+  }
+
+  // ---------- Acceso ----------
+  function tabAuth(cual) {
+    $('p-entrar').hidden = cual !== 'entrar'; $('p-registro').hidden = cual !== 'registro';
+    $('t-entrar').className = cual === 'entrar' ? 'on' : ''; $('t-registro').className = cual === 'registro' ? 'on' : '';
+  }
+  async function registrar() {
+    const r = await api('POST', '/api/auth/register', { nombre: $('r-nombre').value.trim(), email: $('r-email').value.trim(), password: $('r-pass').value });
+    if (!r.ok) return toast(textoError(r), 'error');
+    toast('Cuenta creada (201). Ahora ingresá con tu correo y contraseña.');
+    $('l-email').value = $('r-email').value.trim(); tabAuth('entrar');
+  }
+  async function entrar(email, password) {
+    cred = { email, password };
+    const r = await api('GET', '/api/auth/me');
+    if (!r.ok) { cred = null; return toast(textoError(r), 'error'); }
+    me = r.datos; pasajero = null;
+    $('toast').hidden = true; // limpia mensajes de intentos anteriores
+    $('auth').hidden = true; $('shell').hidden = false;
+    document.body.classList.toggle('admin', me.rol === 'ADMIN');
+    $('quien').innerHTML = esc(me.email) + '<small>' + (me.rol === 'ADMIN' ? 'Administrador (operador)' : 'Pasajero') + '</small>';
+    if (me.rol !== 'ADMIN') await buscarPasajero();
+    ir(TABS[me.rol === 'ADMIN' ? 'ADMIN' : 'USER'][0][0]);
+  }
+  const demo = (rol) => entrar(rol === 'ADMIN' ? 'admin@altokego.test' : 'cliente@altokego.test', rol === 'ADMIN' ? 'admin123' : 'cliente123');
+  function salir() {
+    cred = me = pasajero = null; $('l-pass').value = '';
+    $('shell').hidden = true; $('auth').hidden = false; document.body.classList.remove('admin');
+  }
+
+  // El pasajero es la persona que viaja: se vincula con la cuenta por el correo
+  async function buscarPasajero() {
+    const r = await api('GET', '/api/pasajeros', null, false);
+    if (r.ok) pasajero = r.datos.find((p) => p.email.toLowerCase() === me.email.toLowerCase()) || null;
+  }
+
+  // ---------- Navegación ----------
+  function ir(tab) {
+    $('nav').innerHTML = TABS[me.rol === 'ADMIN' ? 'ADMIN' : 'USER'].map(([id, ico, nom]) =>
+      `<button class="${id === tab ? 'on' : ''}" onclick="ir('${id}')"><span>${ico}</span>${nom}</button>`).join('');
+    ({ pedir: vistaPedir, mis: vistaMis, operaciones: vistaOperaciones, pasajeros: vistaPasajeros })[tab]();
+  }
+  const clave = (e) => { const k = String(e || '').toLowerCase(); return k === 'pending' ? 'pendiente' : k; };
+  const badge = (e) => { const k = clave(e); const nom = (ESTADOS.find((x) => x[0] === k) || [k, k])[1];
+    return `<span class="badge st-${k === 'en curso' ? 'curso' : k}">${esc(nom)}</span>`; };
+  const fecha = (f) => new Date(f).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+
+  // ---------- Pasajero: pedir viaje ----------
+  function vistaPedir() {
+    if (!pasajero) {
+      $('vista').innerHTML = `<h2>Un último paso</h2><p class="sub">Necesitamos un teléfono de contacto para coordinar tus viajes.</p>
+        <div class="card"><label for="pf-nombre">Nombre</label><input id="pf-nombre" placeholder="Tu nombre">
+        <label for="pf-tel">Teléfono</label><input id="pf-tel" placeholder="Ej: 2644123456">
+        <button style="width:100%;margin-top:14px" onclick="guardarPerfil()">Guardar y continuar</button></div>`;
+      return;
+    }
+    const opts = Object.keys(ZONAS).map((z) => `<option>${z}</option>`).join('');
+    $('vista').innerHTML = `<h2>¿A dónde vamos?</h2><p class="sub">Elegí tu recorrido y confirmá. Un operador te asigna chofer.</p>
+      <div class="card">
+        <label for="o">Salís desde</label><select id="o" onchange="estimar()">${opts}</select>
+        <label for="d">Vas a</label><select id="d" onchange="estimar()">${opts}</select>
+        <label class="check"><input type="checkbox" id="t" onchange="estimar()"> Camino de tierra o desvío (+15%)</label>
+        <label for="pago">Forma de pago</label>
+        <select id="pago"><option value="efectivo">Efectivo</option><option value="transferencia">Transferencia</option><option value="tarjeta">Tarjeta</option></select>
+        <div class="tarifa"><small>Tarifa estimada</small><strong id="tarifa"></strong><small>Estimación de demostración: el operador confirma la tarifa final.</small></div>
+        <button class="nar" id="btn-confirmar" onclick="confirmarViaje()">Confirmar viaje</button>
+      </div>`;
+    $('d').selectedIndex = 2; estimar();
+  }
+  function estimar() {
+    const o = $('o').value, d = $('d').value, ok = o !== d;
+    tarifaActual = 0;
+    if (ok) { let t = 1200 + 650 * Math.abs(ZONAS[o] - ZONAS[d]); if ($('t').checked) t *= 1.15; tarifaActual = Math.round(t / 50) * 50; }
+    $('tarifa').textContent = ok ? dinero(tarifaActual) : 'Elegí un destino distinto';
+    $('btn-confirmar').disabled = !ok;
+  }
+  async function guardarPerfil() {
+    const r = await api('POST', '/api/pasajeros', { nombre: $('pf-nombre').value.trim(), email: me.email, telefono: $('pf-tel').value.trim() });
+    if (!r.ok) return toast(textoError(r), 'error');
+    pasajero = r.datos; toast('Datos guardados (201).'); vistaPedir();
+  }
+  async function confirmarViaje() {
+    const r = await api('POST', '/api/viajes', { origen: $('o').value, destino: $('d').value, precioArs: tarifaActual, metodoPago: $('pago').value, pasajeroId: pasajero.id });
+    if (!r.ok) return toast(textoError(r), 'error');
+    $('vista').innerHTML = `<div class="card ok-card" style="margin-top:24px"><div class="grande">✅</div><h2>¡Viaje solicitado!</h2>
+      <p class="sub">${esc(r.datos.origen)} → ${esc(r.datos.destino)} · ${dinero(r.datos.precioArs)}<br>Un operador te asigna chofer y te avisa.</p>
+      <button style="margin-top:10px" onclick="ir('mis')">Ver mis viajes</button></div>`;
+  }
+  async function vistaMis() {
+    const r = await api('GET', '/api/viajes/pasajero/' + pasajero.id, null, false);
+    const v = r.ok ? r.datos.slice().sort((a, b) => b.id - a.id) : [];
+    $('vista').innerHTML = `<h2>Mis viajes</h2><p class="sub">Hola, ${esc(pasajero.nombre)}. Estos son tus pedidos.</p>` + (v.length
+      ? `<div class="lista">${v.map((x) => tarjetaViaje(x)).join('')}</div>`
+      : `<div class="vacio">Todavía no pediste ningún viaje.<br><br><button onclick="ir('pedir')">Pedir mi primer viaje</button></div>`);
+  }
+  const tarjetaViaje = (v, admin = false) => `<div class="card viaje">
+      <div class="fila"><span class="ruta">${esc(v.origen)} → ${esc(v.destino)}</span>${admin ? '' : badge(v.estado)}</div>
+      <div class="meta">${admin ? esc(v.nombrePasajero) + ' · ' : ''}${fecha(v.fechaCreacion)} · ${esc(v.metodoPago)}</div>
+      <div class="fila"><b>${dinero(v.precioArs)}</b>${admin ? `<span><select class="estado" onchange="cambiarEstado(${v.id}, this.value)">${ESTADOS.map(([k, n]) =>
+        `<option value="${k}" ${k === clave(v.estado) ? 'selected' : ''}>${n}</option>`).join('')}</select>
+        <button class="mini" onclick="eliminarViaje(${v.id})">Eliminar</button></span>` : ''}</div></div>`;
+
+  // ---------- Administrador / operador ----------
+  async function vistaOperaciones() {
+    const r = await api('GET', '/api/viajes', null, false);
+    const v = r.ok ? r.datos.slice().sort((a, b) => b.id - a.id) : [];
+    const fin = v.filter((x) => clave(x.estado) === 'finalizado').reduce((s, x) => s + x.precioArs, 0);
+    $('vista').innerHTML = `<h2>Operaciones</h2><p class="sub">En esta primera fase el operador asigna el chofer en forma manual y actualiza el estado de cada viaje.</p>
+      <div class="kpis">
+        <div class="kpi"><small>Viajes totales</small><b>${v.length}</b></div>
+        <div class="kpi"><small>Pendientes</small><b>${v.filter((x) => clave(x.estado) === 'pendiente').length}</b></div>
+        <div class="kpi"><small>Facturado (finalizados)</small><b>${dinero(fin)}</b></div>
+        <div class="kpi nar"><small>Comisión AltokeGo (12%)</small><b>${dinero(Math.round(fin * COMISION))}</b></div>
+      </div>` + (v.length ? `<div class="lista">${v.map((x) => tarjetaViaje(x, true)).join('')}</div>` : '<div class="vacio">No hay viajes cargados.</div>');
+  }
+  async function cambiarEstado(id, estado) {
+    const r = await api('PATCH', '/api/viajes/' + id + '/estado', { estado });
+    toast(r.ok ? 'Estado actualizado (200).' : textoError(r), r.ok ? 'ok' : 'error');
+    vistaOperaciones();
+  }
+  async function eliminarViaje(id) {
+    if (!confirm('¿Eliminar este viaje?')) return;
+    const r = await api('DELETE', '/api/viajes/' + id);
+    toast(r.ok ? 'Viaje eliminado (204).' : textoError(r), r.ok ? 'ok' : 'error');
+    if (r.ok) vistaOperaciones();
+  }
+  async function vistaPasajeros() {
+    const r = await api('GET', '/api/pasajeros', null, false);
+    const p = r.ok ? r.datos : [];
+    $('vista').innerHTML = `<h2>Pasajeros</h2><p class="sub">Un pasajero con viajes registrados no se puede eliminar (el servidor responde 409).</p><div class="lista">` +
+      p.map((x) => `<div class="card viaje"><div class="fila"><span class="ruta">${esc(x.nombre)}</span>
+        <button class="mini" onclick="eliminarPasajero(${x.id})">Eliminar</button></div><div class="meta">${esc(x.email)} · ${esc(x.telefono)}</div></div>`).join('') + '</div>';
+  }
+  async function eliminarPasajero(id) {
+    if (!confirm('¿Eliminar este pasajero?')) return;
+    const r = await api('DELETE', '/api/pasajeros/' + id);
+    toast(r.ok ? 'Pasajero eliminado (204).' : textoError(r), r.ok ? 'ok' : 'error');
+    if (r.ok) vistaPasajeros();
+  }
+</script>
+</body>
+</html>
